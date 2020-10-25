@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -23,6 +24,16 @@ module.exports = {
 			{
 				test: /\.(ts|tsx)$/,
 				use: 'ts-loader',
+				exclude: /node_modules/,
+			},
+			{
+				test: /\.(scss|css)$/,
+				use: [
+					MiniCssExtractPlugin.loader,
+					// 'style-loader', // creates style nodes from JS strings
+					'css-loader', // translates CSS into CommonJS
+					'sass-loader', // compiles Sass to CSS, using Node Sass by default
+				],
 				exclude: /node_modules/,
 			},
 			{
@@ -55,9 +66,9 @@ module.exports = {
 			minify:
 				process.env.NODE_ENV === 'production'
 					? {
-						collapseWhitespace: true,
-						removeComments: true,
-					}
+							collapseWhitespace: true,
+							removeComments: true,
+					  }
 					: false,
 		}),
 		new CleanWebpackPlugin(),
@@ -65,6 +76,10 @@ module.exports = {
 			openAnalyzer: false,
 			analyzerMode: 'static',
 			reportFilename: '../analyzer/report.html',
+		}),
+		new MiniCssExtractPlugin({
+			filename: '[name].css',
+			chunkFilename: '[id].css',
 		}),
 	],
 };
